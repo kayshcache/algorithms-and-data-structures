@@ -1,38 +1,73 @@
 #include<stdio.h>
+#include<stdlib.h>
+
+void sift_down(int*, int, int);
+void make_heap(int*, int);
+int number_count = 0;
+int int_array[100];
 
 int main()
 {
 //	display a prompt for the file name
-	int number_count = 0;
 	char filename[20];
-	puts("Please provide filename:\n");
+	puts("Please provide filename:");
 	scanf("%[^\n]s", filename);
-	printf("Filename: %s", filename);
-	FILE *in_file = fopen(filename, "r");
-	char num = getc(in_file);
-	int interger_array[100];
-	while(num != EOF) {
-		putchar(num);
-		num = getc(in_file);
-		if (num != '\n')
-			interger_array[number_count] = atoi(num);
-		number_count++;
-	}
-	//fclose();
+	printf("Filename entered: %s\n", filename);
 
-//	read in the file name
-//	try to open the file
-//	if the file fails to open
-//		print an error message on the screen and exit
-//	fi
-//	while we can read an int from the file
-//		insert the int into the array
-//	elihw
-//	close the file
-//	makeheap()
-//	for i = 1 to 5
-//		print the ith element of the heap
-//	rof
-//End main
+//	open file with check
+	FILE * in_file = fopen(filename, "r");
+	if (in_file == NULL) {
+		puts("Error opening file!");
+		exit(EXIT_FAILURE);
+	}
+
+//	read file to array and close file
+	while(fscanf(in_file, "%d\n", &int_array[number_count]) != EOF)
+		number_count++;
+	fclose(in_file);
+
+	// making heap with min-heap property
+	make_heap(int_array, number_count);
+
+	for (int i = 0; i < 5; i++)
+		printf("Number on line %i: %d\n", i+1, int_array[i]);
+
+	return 0;
+}
+// END MAIN
+
+void sift_down(int * arr, int n, int i)
+{
+    int largest = i;
+    int left = i*2 + 1;
+    int right = i*2 + 2;
+
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
+
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
+
+    if (largest != i) {
+	int temp = arr[i];
+	arr[i] = arr[largest];
+	arr[largest] = temp;
+        sift_down(arr, n, largest);
+    }
 }
 
+void make_heap(int * integer_array, int count)
+{
+    for (int i = count/2 - 1; i >= 0; i--)
+        sift_down(integer_array, count, i);
+
+    /*
+    for (int i = count-1; i > 0; i--) {
+	int temp = integer_array[0];
+	integer_array[0] = integer_array[i];
+	integer_array[i] = temp;
+        sift_down(integer_array, i, 0);
+    }
+    */
+}
+// Reference: code hints on sifting heap from https://ide.geeksforgeeks.org/rFO7Lm
